@@ -11,6 +11,9 @@ RUN apt-get -y install --no-install-recommends \
     sudo \
     locales
 
+RUN apt-get -y autoremove python2 \
+    && rm -rf /etc/python && rm -rf /etc/python2.7
+
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
 
 RUN groupadd --gid $USER_GID $USERNAME \
