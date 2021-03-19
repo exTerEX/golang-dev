@@ -12,24 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+FROM golang:1.16.2-buster AS build
+
 FROM exterex/base-dev
 
-ENV GO111MODULE on
+COPY --from=build /usr/local /usr/local
+
+RUN sudo ln -s /usr/local/go/bin/go /usr/local/bin/go
 
 ENV DEBIAN_FRONTEND noninteractive
 
-RUN sudo apt update \
-    && sudo apt --assume-yes install --no-install-recommends \
-    golang \
-    && go get golang.org/x/tools/gopls@latest
-
-WORKDIR /tmp/
-RUN git clone https://github.com/go-delve/delve \
-    && cd delve \
-    && go install github.com/go-delve/delve/cmd/dlv \
-    && sudo rm -rf /tmp/delve
-
-RUN sudo rm -rf /var/lib/apt/lists/*
+RUN go get golang.org/x/tools/gopls@latest \
+    && go install github.com/go-delve/delve/cmd/dlv@latest; \
+    go version
 
 ENV DEBIAN_FRONTEND dialog
 
